@@ -1,0 +1,20 @@
+{{- if .Values.restic.repositories.pvc.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "restic-backup.fullname" . }}-pvc
+  {{- with .Release.Namespace }}
+  namespace: {{ toYaml . }}
+  {{- end }}
+  labels:
+    {{- include "restic-backup.labels" . | nindent 4 }}
+spec:
+  accessModes: {{ .Values.restic.repositories.pvc.accessModes }}
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: {{ .Values.restic.repositories.pvc.size }}
+  {{- with .Values.restic.repositories.pvc.storageClass }}
+  storageClassName: {{ toYaml . }}
+  {{- end }}
+{{- end }}

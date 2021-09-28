@@ -1,0 +1,15 @@
+apiVersion: v2
+name: restic-backup
+description: A universal Helm chart for backups with restic
+type: application
+version: 0.2.0
+kubeVersion: ">= 1.16.0"
+keywords:
+  - backup
+  - restic
+  - consul
+sources:
+  - https://github.com/siticom/helm-charts/tree/main/charts/restic-backup
+maintainers:
+  - name: siticom GmbH
+    url: https://www.siticom.online/

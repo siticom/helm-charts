@@ -1,0 +1,134 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "restic-backup.fullname" . }}
+  {{- with .Release.Namespace }}
+  namespace: {{ toYaml . }}
+  {{- end }}
+  labels:
+    {{- include "restic-backup.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cronjob.schedule }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.cronjob.backoffLimit }}
+      template:
+        metadata:
+          annotations:
+            checksum/config: {{ include (print $.Template.BasePath "/configmap-scripts.yaml") . | sha256sum }}
+          {{- with .Values.podAnnotations }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          labels:
+            {{- include "restic-backup.selectorLabels" . | nindent 12 }}
+        spec:
+          restartPolicy: {{ .Values.cronjob.restartPolicy }}
+          {{- with .Values.podSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          containers:
+          - name: restic
+            image: "{{ .Values.restic.repository }}:{{ .Values.restic.tag }}"
+            imagePullPolicy: {{ .Values.restic.pullPolicy | quote }}
+            {{- with .Values.securityContext }}
+            securityContext:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            envFrom:
+            - secretRef:
+                name: {{ include "restic-backup.fullname" . }}-restic
+            - configMapRef:
+                name: {{ include "restic-backup.fullname" . }}-env-restic
+            command:
+            - /script.sh
+            volumeMounts:
+            - name: scripts
+              mountPath: /script.sh
+              subPath: restic-script.sh
+            - name: data
+              mountPath: /data
+            {{- if .Values.restic.cache.enabled }}
+            - name: cache
+              mountPath: {{ .Values.restic.cache.path }}
+            {{- end }}
+            {{- if .Values.restic.repositories.pvc.enabled }}
+            - name: backup
+              mountPath: {{ .Values.restic.repositories.pvc.RESTIC_REPOSITORY }}
+            {{- end }}
+            {{- with .Values.resources }}
+            resources:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+
+          initContainers:
+          {{- if .Values.consul.enabled }}
+          - name: consul
+            image: "{{ .Values.consul.repository }}:{{ .Values.consul.tag }}"
+            imagePullPolicy: {{ .Values.consul.pullPolicy | quote }}
+            {{- with .Values.securityContext }}
+            securityContext:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            envFrom:
+            {{- if .Values.consul.auth.CONSUL_HTTP_TOKEN }}
+            - secretRef:
+                name: {{ include "restic-backup.fullname" . }}-token
+            {{- end }}
+            - configMapRef:
+                name: {{ include "restic-backup.fullname" . }}-env-consul
+            env:
+            {{- with .Values.consul.auth.secretKeyRef }}
+            - name: CONSUL_HTTP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  {{- toYaml . | nindent 18 }}
+            {{- end }}
+            command:
+            - /script.sh
+            volumeMounts:
+            - name: scripts
+              mountPath: /script.sh
+              subPath: consul-script.sh
+            - name: data
+              mountPath: /data
+            {{- with .Values.resources }}
+            resources:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+          {{- end }}
+          {{- with .Values.customInitContainer }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          volumes:
+          - name: scripts
+            configMap:
+              name: {{ include "restic-backup.fullname" . }}-scripts
+              defaultMode: 0555
+          - name: data
+            emptyDir: {}
+          {{- if .Values.restic.cache.enabled }}
+          - name: cache
+            persistentVolumeClaim:
+              claimName: {{ include "restic-backup.fullname" . }}-cache
+          {{- end }}
+          {{- if .Values.restic.repositories.pvc.enabled }}
+          - name: backup
+            persistentVolumeClaim:
+              claimName: {{ include "restic-backup.fullname" . }}-pvc
+          {{- end }}
