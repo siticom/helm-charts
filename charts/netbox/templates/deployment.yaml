@@ -1,0 +1,223 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "netbox.fullname" . }}
+  labels:
+    {{- include "netbox.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "netbox.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: netbox
+  {{ if .Values.updateStrategy -}}
+  strategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
+  {{ end -}}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if (not .Values.existingSecret) }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "netbox.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: netbox
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "netbox.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: init-dirs
+          image: "{{ .Values.init.image.repository }}:{{ .Values.init.image.tag }}"
+          imagePullPolicy: {{ .Values.init.image.pullPolicy }}
+          command: [/bin/sh, -c, mkdir -p /opt/unit/state /opt/unit/tmp]
+          {{- if .Values.init.resources }}
+          resources:
+            {{- toYaml .Values.init.resources | nindent 12 }}
+          {{- end }}
+          securityContext:
+            {{- toYaml .Values.init.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: optunit
+              mountPath: /opt/unit
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SUPERUSER_NAME
+              value: {{ .Values.superuser.name | quote }}
+            - name: SUPERUSER_EMAIL
+              value: {{ .Values.superuser.email | quote }}
+            - name: SKIP_STARTUP_SCRIPTS
+              value: {{ .Values.skipStartupScripts | quote }}
+            {{- with .Values.extraEnvs }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /{{ .Values.basePath }}login/
+              port: http
+              {{- if (not (eq (index .Values.allowedHosts 0) "*")) }}
+              httpHeaders:
+                - name: Host
+                  value: {{ (index .Values.allowedHosts 0) | quote }}
+              {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/netbox/config/configuration.py
+              subPath: configuration.py
+              readOnly: true
+            {{ if eq .Values.remoteAuth.backend "netbox.authentication.LDAPBackend" -}}
+            - name: config
+              mountPath: /etc/netbox/config/ldap/ldap_config.py
+              subPath: ldap_config.py
+              readOnly: true
+            {{- end }}
+            - name: config
+              mountPath: /run/config/netbox
+              readOnly: true
+            - name: secrets
+              mountPath: /run/secrets/netbox
+              readOnly: true
+            - name: netbox-tmp
+              mountPath: /tmp
+            - name: media
+              mountPath: /opt/netbox/netbox/media
+              subPath: {{ .Values.persistence.subPath | default "" | quote }}
+            {{- if .Values.reportsPersistence.enabled }}
+            - name: reports
+              mountPath: /opt/netbox/netbox/reports
+              subPath: {{ .Values.reportsPersistence.subPath | default "" | quote }}
+            {{- end }}
+            - name: optunit
+              mountPath: /opt/unit
+            {{- if or .Values.postgresql.enabled .Values.externalDatabase.existingSecretName }}
+            - name: db-secret
+              mountPath: /run/secrets/database
+              readOnly: true
+            {{- end }}
+            {{- if .Values.redis.enabled }}
+            - name: redis-secret
+              mountPath: /run/secrets/redis
+              readOnly: true
+            {{- else }}
+            {{- if .Values.tasksRedis.existingSecretName }}
+            - name: redis-tasks-secret
+              mountPath: /run/secrets/redis_tasks
+              readOnly: true
+            {{- end }}
+            {{- if .Values.cachingRedis.existingSecretName }}
+            - name: redis-caching-secret
+              mountPath: /run/secrets/redis_caching
+              readOnly: true
+            {{- end }}
+            {{- end }}
+            - name: secrets
+              mountPath: /run/secrets/superuser_password
+              subPath: superuser_password
+              readOnly: true
+            - name: secrets
+              mountPath: /run/secrets/superuser_api_token
+              subPath: superuser_api_token
+              readOnly: true
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.resources }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- end }}
+        {{- with .Values.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.extraInitContainers }}
+      initContainers:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "netbox.fullname" . }}
+        - name: secrets
+          secret:
+            {{- if .Values.existingSecret }}
+            secretName: {{ .Values.existingSecret | quote }}
+            {{- else }}
+            secretName: {{ include "netbox.fullname" . }}
+            {{- end }}
+        - name: netbox-tmp
+          emptyDir:
+            medium: Memory
+        - name: optunit
+          emptyDir:
+            medium: Memory
+        - name: media
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-media" (include "netbox.fullname" .)) }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        {{- if .Values.reportsPersistence.enabled }}
+        - name: reports
+          persistentVolumeClaim:
+            claimName: {{ .Values.reportsPersistence.existingClaim | default (printf "%s-reports" (include "netbox.fullname" .)) }}
+        {{- end }}
+        {{- if or .Values.postgresql.enabled .Values.externalDatabase.existingSecretName }}
+        - name: db-secret
+          secret:
+            {{- if .Values.postgresql.enabled }}
+            secretName: {{ include "netbox.postgresql.fullname" . | quote }}
+            {{- else }}
+            secretName: {{ .Values.externalDatabase.existingSecretName | quote }}
+            {{- end }}
+        {{- end }}
+        {{- if .Values.redis.enabled }}
+        - name: redis-secret
+          secret:
+            secretName: {{ include "netbox.redis.fullname" . | quote }}
+        {{- else }}
+        {{- if .Values.tasksRedis.existingSecretName }}
+        - name: redis-tasks-secret
+          secret:
+            secretName: {{ .Values.tasksRedis.existingSecretName | quote }}
+        {{- end }}
+        {{- if .Values.cachingRedis.existingSecretName }}
+        - name: redis-caching-secret
+          secret:
+            secretName: {{ .Values.cachingRedis.existingSecretName | quote }}
+        {{- end }}
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
