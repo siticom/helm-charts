@@ -73,7 +73,7 @@ spec:
               protocol: TCP
           readinessProbe:
             httpGet:
-              path: /{{ .Values.basePath }}login/
+              path: /{{ .Values.basePath }}health
               port: http
               {{- if (not (eq (index .Values.allowedHosts 0) "*")) }}
               httpHeaders:

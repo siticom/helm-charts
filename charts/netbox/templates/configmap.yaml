@@ -67,6 +67,9 @@ data:
                                      in REDIS['caching']['SENTINELS']]
     {{- end }}
 
+    # Enable health check endpoint /health
+    HEALTH_CHECK_ENABLED = True
+
   netbox.yaml: |
     ALLOWED_HOSTS: {{ toJson .Values.allowedHosts }}
 
