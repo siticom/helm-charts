@@ -1,0 +1,14 @@
+{
+    "enabled": true,
+    "regexManagers": [
+        {
+            "fileMatch": [
+                "(^|/)Chart\\.ya?ml$"
+            ],
+            "matchStrings": [
+                "depName=(?<depName>.*)\\s(version|appVersion): \"?(?<currentValue>[0-9a-z.]+)\"?"
+            ],
+            "datasourceTemplate": "docker"
+        }
+    ]
+}
