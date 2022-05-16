@@ -5,7 +5,7 @@ Custom resource definitions for k8up - A Kubernetes and OpenShift Backup Operato
 ## Upgrade
 
 ```sh
-export APP_VERSION=v2.1.0
+export APP_VERSION=v2.1.2
 wget -O templates/crds.yaml https://github.com/k8up-io/k8up/releases/download/$APP_VERSION/k8up-crd.yaml
 ```
 
