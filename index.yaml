@@ -1,0 +1,87 @@
+apiVersion: v1
+entries:
+  k8up-crds:
+  - apiVersion: v2
+    appVersion: v2.1.0
+    created: "2022-05-17T11:15:29.116852209Z"
+    description: CRDs for k8up - A Kubernetes and OpenShift Backup Operator based
+      on restic
+    digest: 822902f65736e58f155f0a9e597e7903109ea8c98778e62eaa8600cd488f7691
+    home: https://github.com/k8up-io/k8up
+    name: k8up-crds
+    type: application
+    urls:
+    - https://github.com/siticom/helm-charts/releases/download/k8up-crds-2.0.2/k8up-crds-2.0.2.tgz
+    version: 2.0.2
+  netbox:
+  - apiVersion: v2
+    appVersion: v3.0.12
+    created: "2022-05-17T11:15:29.321648262Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 10.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 12.x.x
+    description: IP address management (IPAM) and data center infrastructure management
+      (DCIM) tool
+    digest: ec051b4765809c6b85082e9de91beb532019cb4472470b2a89ac93bc155ea03b
+    home: https://github.com/bootc/netbox-chart
+    icon: https://raw.githubusercontent.com/netbox-community/netbox/develop/docs/netbox_logo.png
+    maintainers:
+    - email: bootc@boo.tc
+      name: Chris Boot
+      url: https://github.com/bootc
+    name: netbox
+    urls:
+    - https://github.com/siticom/helm-charts/releases/download/netbox-3.1.1/netbox-3.1.1.tgz
+    version: 3.1.1
+  prom2teams:
+  - apiVersion: v1
+    appVersion: 3.2.3
+    created: "2022-05-17T11:15:29.467424006Z"
+    description: A Helm chart for Prom2Teams
+    digest: 527b61f78a293254ffece4f1cd26604b6a948911c2165e9474dcfd80807029a8
+    name: prom2teams
+    urls:
+    - https://github.com/siticom/helm-charts/releases/download/prom2teams-0.2.0/prom2teams-0.2.0.tgz
+    version: 0.2.0
+  restic-backup:
+  - apiVersion: v2
+    created: "2022-05-17T11:15:29.614936977Z"
+    description: A universal Helm chart for backups with restic
+    digest: 20840df9643157ffec24cdc66e18d68bd3e62b3125f52fcab35eea00aaf11b7e
+    keywords:
+    - backup
+    - restic
+    - consul
+    kubeVersion: '>= 1.16.0'
+    maintainers:
+    - name: siticom GmbH
+      url: https://www.siticom.online/
+    name: restic-backup
+    sources:
+    - https://github.com/siticom/helm-charts/tree/main/charts/restic-backup
+    type: application
+    urls:
+    - https://github.com/siticom/helm-charts/releases/download/restic-backup-0.2.0/restic-backup-0.2.0.tgz
+    version: 0.2.0
+  yopass:
+  - apiVersion: v2
+    appVersion: 11.4.1
+    created: "2022-05-17T11:15:29.804759399Z"
+    dependencies:
+    - name: memcached
+      repository: https://charts.bitnami.com/bitnami
+      version: 6.x.x
+    description: A Helm chart for Kubernetes
+    digest: 6f35a61954676e14aa9caaa675982317fe43a93b859513219988bbb02c2524e1
+    name: yopass
+    type: application
+    urls:
+    - https://github.com/siticom/helm-charts/releases/download/yopass-0.1.0/yopass-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-05-17T11:15:29.804771899Z"
