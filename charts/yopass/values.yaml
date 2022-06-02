@@ -69,6 +69,9 @@ resources:
     cpu: 100m
     memory: 100Mi
 
+env:  [] 
+  # YP_SECRET_MAX_LENGTH: 10000
+
 autoscaling:
   enabled: false
   minReplicas: 1
