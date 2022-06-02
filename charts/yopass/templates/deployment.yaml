@@ -49,10 +49,11 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.env }}
           env:
           {{- range $name, $value := .Values.env }}
-            - name: {{ $name }}
-              value: {{ $value }}
+            -{{- toYaml $value | nindent 14   }}
+          {{- end }}
           {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
