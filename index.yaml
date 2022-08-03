@@ -53,6 +53,15 @@ entries:
     version: 3.1.1
   prom2teams:
   - apiVersion: v1
+    appVersion: 3.3.0
+    created: "2022-08-03T11:14:35.733434156Z"
+    description: A Helm chart for Prom2Teams
+    digest: a94f376a48cd7aad1d9d9b759a6e7172679787676917aee873db96a0a841b1e6
+    name: prom2teams
+    urls:
+    - https://github.com/siticom/helm-charts/releases/download/prom2teams-0.3.0/prom2teams-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v1
     appVersion: 3.2.3
     created: "2022-05-17T11:15:29.467424006Z"
     description: A Helm chart for Prom2Teams
@@ -138,4 +147,4 @@ entries:
     urls:
     - https://github.com/siticom/helm-charts/releases/download/yopass-0.1.0/yopass-0.1.0.tgz
     version: 0.1.0
-generated: "2022-06-02T15:22:32.168133092Z"
+generated: "2022-08-03T11:14:35.733453357Z"
