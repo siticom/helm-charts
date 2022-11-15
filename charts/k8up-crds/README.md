@@ -1,5 +1,7 @@
 # k8up CRDs
 
+THIS CHART IS DEPRECATED.
+
 Custom resource definitions for k8up - A Kubernetes and OpenShift Backup Operator based on restic
 
 ## Upgrade
