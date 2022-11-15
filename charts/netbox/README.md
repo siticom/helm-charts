@@ -1,5 +1,7 @@
 # NetBox
 
+THIS CHART IS DEPRECATED.
+
 [NetBox](https://netbox.readthedocs.io/) is an IP address management (IPAM) and
 data center infrastructure management (DCIM) tool.
 
