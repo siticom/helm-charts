@@ -11,7 +11,7 @@ maintainers:
   url: https://github.com/bootc
 dependencies:
 - name: postgresql
-  version: 10.x.x
+  version: 12.x
   repository: https://charts.bitnami.com/bitnami
   condition: postgresql.enabled
 - name: redis
