@@ -26,10 +26,10 @@ appVersion: "22.12.0"
 
 dependencies:
   - name: mariadb
-    version: ~11.4.4
+    version: 11.x.x
     repository: https://charts.bitnami.com/bitnami
     condition: mariadb.enabled
   - name: redis
-    version: ~17.4.3
+    version: 17.x.x
     repository: https://charts.bitnami.com/bitnami
     condition: redis.enabled
