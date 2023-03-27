@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "librenms.fullname" . }}-config
+data:
+{{- range $k, $v := .Values.secretEnv }}
+  {{ $k }}: {{ $v | b64enc }}
+{{- end }}
