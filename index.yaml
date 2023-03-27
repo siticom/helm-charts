@@ -25,6 +25,26 @@ entries:
     urls:
     - https://github.com/siticom/helm-charts/releases/download/k8up-crds-2.0.2/k8up-crds-2.0.2.tgz
     version: 2.0.2
+  librenms:
+  - apiVersion: v2
+    appVersion: 22.12.0
+    created: "2023-03-27T11:33:41.451825997Z"
+    dependencies:
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.x.x
+    description: A Helm chart for Kubernetes
+    digest: 288cadec13b88cdf7f7cdf00de87e6d86f06a7bc7c5d9b0494199a17cb64c939
+    name: librenms
+    type: application
+    urls:
+    - https://github.com/siticom/helm-charts/releases/download/librenms-0.1.0/librenms-0.1.0.tgz
+    version: 0.1.0
   netbox:
   - apiVersion: v2
     appVersion: v3.0.12
@@ -221,4 +241,4 @@ entries:
     urls:
     - https://github.com/siticom/helm-charts/releases/download/yopass-0.1.0/yopass-0.1.0.tgz
     version: 0.1.0
-generated: "2023-03-17T17:40:05.881250048Z"
+generated: "2023-03-27T11:33:41.451853497Z"
