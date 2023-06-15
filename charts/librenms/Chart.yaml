@@ -22,7 +22,7 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # depName=docker.io/librenms/librenms
-appVersion: "22.12.0"
+appVersion: "23.5.0"
 
 dependencies:
   - name: mariadb
