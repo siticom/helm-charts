@@ -27,6 +27,25 @@ entries:
     version: 2.0.2
   librenms:
   - apiVersion: v2
+    appVersion: 23.9.1
+    created: "2023-10-18T19:59:41.220190694Z"
+    dependencies:
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.x.x
+    description: A Helm chart for Kubernetes
+    digest: 71010f0452c11ca876c4c63d811e1deba2fc69989aacaed3bcd689a71778e377
+    name: librenms
+    type: application
+    urls:
+    - https://github.com/siticom/helm-charts/releases/download/librenms-0.3.0/librenms-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v2
     appVersion: 23.8.2
     created: "2023-09-05T14:21:00.025945462Z"
     dependencies:
@@ -307,4 +326,4 @@ entries:
     urls:
     - https://github.com/siticom/helm-charts/releases/download/yopass-0.1.0/yopass-0.1.0.tgz
     version: 0.1.0
-generated: "2023-10-18T19:58:05.732969646Z"
+generated: "2023-10-18T19:59:41.220234395Z"
