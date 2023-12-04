@@ -53,7 +53,7 @@ spec:
               mountPath: /data
             {{- if gt (len .Values.cronJobs) 0 }}
             - name: cron
-              mountPath: /etc/cron.d
+              mountPath: /etc/cron.d/librenms
               subPath: librenms
             {{- end }}
           env:
@@ -119,7 +119,7 @@ spec:
             items:
               - key: librenms
                 path: librenms
-            defaultMode: 644
+            defaultMode: 0644
       {{- end }}
   volumeClaimTemplates:
     - metadata:
