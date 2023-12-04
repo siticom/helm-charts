@@ -51,6 +51,11 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+            {{- if gt (len .Values.cronJobs) 0 }}
+            - name: cron
+              mountPath: /etc/cron.d
+              subPath: librenms
+            {{- end }}
           env:
             {{- include "librenms.env" . | nindent 12 }}
           envFrom:
@@ -105,6 +110,16 @@ spec:
       {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if gt (len .Values.cronJobs) 0 }}
+      volumes:
+        - name: cron
+          configMap:
+            name: {{ include "librenms.fullname" . }}-cron
+            items:
+              - key: librenms
+                path: librenms
+            defaultMode: 644
       {{- end }}
   volumeClaimTemplates:
     - metadata:
