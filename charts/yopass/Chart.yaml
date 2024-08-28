@@ -26,5 +26,5 @@ appVersion: "11.16.0"
 
 dependencies:
   - name: memcached
-    version: 6.x.x
+    version: 7.x
     repository: https://charts.bitnami.com/bitnami
