@@ -415,6 +415,20 @@ entries:
     version: 0.2.0
   yopass:
   - apiVersion: v2
+    appVersion: 12.3.0
+    created: "2025-10-10T07:43:26.732991459Z"
+    dependencies:
+    - name: memcached
+      repository: https://charts.bitnami.com/bitnami
+      version: 6.x.x
+    description: A Helm chart for Kubernetes
+    digest: e22ff254f024103fc121f04138f06cd144febf1d8a9f784ac7faffe3cdbb65e1
+    name: yopass
+    type: application
+    urls:
+    - https://github.com/siticom/helm-charts/releases/download/yopass-0.6.0/yopass-0.6.0.tgz
+    version: 0.6.0
+  - apiVersion: v2
     appVersion: 11.16.0
     created: "2024-07-01T13:33:54.541977852Z"
     dependencies:
@@ -568,4 +582,4 @@ entries:
     urls:
     - https://github.com/siticom/helm-charts/releases/download/yopass-0.1.0/yopass-0.1.0.tgz
     version: 0.1.0
-generated: "2024-08-06T07:43:23.12101584Z"
+generated: "2025-10-10T07:43:26.733092108Z"
